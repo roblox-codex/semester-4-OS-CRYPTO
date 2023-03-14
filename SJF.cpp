@@ -87,7 +87,7 @@ int main()
     cout << "Process\tArrival Time\tBurst Time\tPriority\tCompletion Time\tTurn Around Time\tWaiting Time" << endl;
     for (i = 0; i < n; i++)
     {
-        cout << p[i] << "\t" << at[i] << "\t\t" << bt[i] << "\t\t" << pr[i] << "\t\t" << ct[i] << "\t\t" << tat[i] << "\t\t" << wt[i] << endl;
+        cout << p[i] << "\t" << at[i] << "\t\t" << bt[i] << "\t\t" << pr[i] << "\t\t" << ct[i] << "\t\t" << tat[i] << "\t\t\t" << wt[i] << endl;
     }
     cout << "Average waiting time: " << avgwt / n << endl;
     cout << "Average turn around time: " << avgtat / n << endl;
