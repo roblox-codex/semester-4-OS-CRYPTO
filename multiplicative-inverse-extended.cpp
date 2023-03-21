@@ -47,7 +47,7 @@ signed main() {
     cin >> a >> m;
     multiplicativeInverse(a, m);
     if (multiplicativeInverse(a, m) >= 0)
-        cout << "Multiplicative inverse of " << a << " is " << multiplicativeInverse(a, m) << endl;
+        cout << "Multiplicative inverse of (" << a << "," << m << ") is " << multiplicativeInverse(a, m) << endl;
     else
         cout << "Multiplicative inverse does not exist" << endl;
     return 0;
