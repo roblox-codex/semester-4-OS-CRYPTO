@@ -81,7 +81,6 @@ int main()
     if (!all_of(key.begin(), key.end(), ::isupper))
     {
         transform(key.begin(), key.end(), key.begin(), ::toupper);
-        cout << key << endl;
     }
 
     // Display menu
