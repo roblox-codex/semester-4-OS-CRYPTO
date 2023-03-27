@@ -37,7 +37,7 @@ void ljf(vector<Process> &processes)
         Process &p = processes[i];
         int start_time = max(current_time, p.arrival_time);
         int end_time = start_time + p.burst_time;
-        int waiting_time = start_time - p.arrival_time;
+        int waiting_time = max(0, start_time - p.arrival_time);
         int turnaround_time = end_time - p.arrival_time;
         total_waiting_time += waiting_time;
         total_turnaround_time += turnaround_time;
