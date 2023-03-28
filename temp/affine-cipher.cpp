@@ -45,7 +45,7 @@ int inverse_modulo(int a, int m)
 }
 
 // Function to encrypt the message
-string encrypt(string message, int a, int b)
+string encrypt(string message, string key, int a, int b)
 {
     // Convert message to uppercase
     transform(message.begin(), message.end(), message.begin(), ::toupper);
@@ -58,7 +58,7 @@ string encrypt(string message, int a, int b)
         {
             int x = c - 'A';
             int y = (a * x + b) % 26;
-            char encrypted_char = y + 'A';
+            char encrypted_char = y + key[y];
             encrypted_message += encrypted_char;
         }
         else
@@ -71,7 +71,7 @@ string encrypt(string message, int a, int b)
 }
 
 // Function to decrypt the message
-string decrypt(string encrypted_message, int a, int b)
+string decrypt(string encrypted_message, string key, int a, int b)
 {
     // Convert message to uppercase
     transform(encrypted_message.begin(), encrypted_message.end(), encrypted_message.begin(), ::toupper);
@@ -102,16 +102,30 @@ string decrypt(string encrypted_message, int a, int b)
 int main()
 {
     string message;
+    string key;
     int a, b;
     int choice;
 
     // Get message, key, and multiplier from user
     cout << "Enter message: ";
     getline(cin, message);
+    cout << "Enter key: ";
+    getline(cin, key);
     cout << "Enter a: ";
     cin >> a;
     cout << "Enter b: ";
     cin >> b;
+
+    if (key.length() != 26)
+    {
+        cout << "Error: key must be 26 characters long" << endl;
+        return 1;
+    }
+
+    if ( !all_of(key.begin(), key.end(), ::isupper))
+    {
+        transform(key.begin(), key.end(), key.begin(), ::toupper);
+    }
 
     // Ensure a is relatively prime to 26
     if (gcd(a, 26) != 1)
@@ -130,13 +144,13 @@ int main()
     if (choice == 1)
     {
         // Encrypt message
-        string encrypted_message = encrypt(message, a, b);
+        string encrypted_message = encrypt(message, key, a, b);
         cout << "Encrypted message: " << encrypted_message << endl;
     }
     else if (choice == 2)
     {
         // Decrypt message
-        string decrypted_message = decrypt(message, a, b);
+        string decrypted_message = decrypt(message, key, a, b);
         cout << "Decrypted message: " << decrypted_message << endl;
     }
     else
