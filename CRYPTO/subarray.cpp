@@ -30,6 +30,7 @@ int main()
     {
         cout << arr[i] << " ";
     }
+    cout << endl;
 
     int mod;
     cout << "Enter the modulus: ";
@@ -40,5 +41,6 @@ int main()
     {
         cout << arr[i] % mod << " ";
     }
+    cout << endl;
     return 0;
 }
