@@ -37,13 +37,13 @@ void input(int &p, int process[], int arrival[], int burst[])
     cout << "Enter the arrival time of processes: " << endl;
     for (int i = 0; i < p; i++)
     {
-        cout << "Enter the arrival time of " << i << " process: ";
+        cout << "Enter the arrival time of " << i + 1 << " process: ";
         cin >> arrival[i];
     }
     cout << "Enter the burst time of processes: " << endl;
     for (int i = 0; i < p; i++)
     {
-        cout << "Enter the burst time of " << i << " process: ";
+        cout << "Enter the burst time of " << i + 1 << " process: ";
         cin >> burst[i];
     }
     // Generate process IDs
