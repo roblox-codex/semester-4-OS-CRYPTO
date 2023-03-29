@@ -45,7 +45,7 @@ int inverse_modulo(int a, int m)
 }
 
 // Function to encrypt the message
-string encrypt(string message, /*string key, */int a, int b)
+string encrypt(string message, /*string key, */ int a, int b)
 {
     // Convert message to uppercase
     transform(message.begin(), message.end(), message.begin(), ::toupper);
@@ -71,7 +71,7 @@ string encrypt(string message, /*string key, */int a, int b)
 }
 
 // Function to decrypt the message
-string decrypt(string encrypted_message, /*string key, */int a, int b)
+string decrypt(string encrypted_message, /*string key, */ int a, int b)
 {
     // Convert message to uppercase
     transform(encrypted_message.begin(), encrypted_message.end(), encrypted_message.begin(), ::toupper);

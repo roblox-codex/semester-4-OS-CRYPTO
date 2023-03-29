@@ -96,7 +96,7 @@ void deletion(node *&head, int val)
 int main()
 {
     node *head = NULL;
-    for (int i = 0; i < 1; i*1)
+    for (int i = 0; i < 1; i * 1)
     {
         cout << "1-insertAtHead\n2-insertAtTail\n3-deleteAtHead\n4-Deletion\n5-display\n6-search\n7-done" << endl;
         int choice;
@@ -153,7 +153,8 @@ int main()
             i = 1;
             return 0;
         }
-        else {
+        else
+        {
             cout << "Invalid choice" << endl;
         }
     }

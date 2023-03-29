@@ -69,12 +69,12 @@ public:
 int main()
 {
     Queue q;
-    for (int i = 0; i < 1; i*1)
+    for (int i = 0; i < 1; i * 1)
     {
         int x;
         int choice;
         cout << "Enter choice : " << endl;
-        cout << "1-push\n2-pop\n3-peek\n4-isEmpty\n5-done"<< endl;
+        cout << "1-push\n2-pop\n3-peek\n4-isEmpty\n5-done" << endl;
         cin >> choice;
         if (choice == 1)
         {

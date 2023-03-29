@@ -1,7 +1,8 @@
 #include <iostream>
 using namespace std;
 
-int main(){
+int main()
+{
     int a, b, c;
     cout << "Enter two numbers: ";
     cin >> a >> b;
@@ -15,12 +16,14 @@ int main(){
     int rem;
     // find a multiple of c which is smaller than sum
     int multiplier = sum / c;
-    if (multiplier<0){
+    if (multiplier < 0)
+    {
         multiplier = multiplier - 1;
     }
-    int multiple = multiplier*c;
+    int multiple = multiplier * c;
     rem = sum - multiple;
-    if (multiplier<0){
+    if (multiplier < 0)
+    {
         rem = 0 - rem;
     }
     cout << "Remainder is: " << rem << endl;

@@ -1,9 +1,11 @@
 #include <iostream>
 using namespace std;
 
-int gcd(int a, int b) {
+int gcd(int a, int b)
+{
     int r;
-    while (b != 0) {
+    while (b != 0)
+    {
         r = a % b;
         a = b;
         b = r;
@@ -11,7 +13,8 @@ int gcd(int a, int b) {
     return a;
 }
 
-int main() {
+int main()
+{
     int num1, num2;
     cout << "Enter two numbers: ";
     cin >> num1 >> num2;

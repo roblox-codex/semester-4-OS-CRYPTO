@@ -73,7 +73,7 @@ public:
 int main()
 {
     queue q;
-    for (int i = 0; i < 1; i*1)
+    for (int i = 0; i < 1; i * 1)
     {
         int x;
         int choice;
@@ -108,8 +108,8 @@ int main()
             i = 1;
             return 0;
         }
-        
-        else 
+
+        else
         {
             cout << "Invalid choice" << endl;
         }

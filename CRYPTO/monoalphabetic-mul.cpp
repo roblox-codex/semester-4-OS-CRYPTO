@@ -109,7 +109,7 @@ int main()
         return 1;
     }
 
-    if ( !all_of(key.begin(), key.end(), ::isupper))
+    if (!all_of(key.begin(), key.end(), ::isupper))
     {
         transform(key.begin(), key.end(), key.begin(), ::toupper);
     }

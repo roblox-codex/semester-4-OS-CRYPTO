@@ -9,12 +9,15 @@ const int N = 1e5 + 5, MOD = 1e9 + 7;
 
 // ax + 0 = 0 -> x + 1
 //y = 0
-struct triplet {
+struct triplet
+{
     int x, y, gcd;
 };
 
-triplet extendedEuclid(int a, int b) {
-    if( b == 0) {
+triplet extendedEuclid(int a, int b)
+{
+    if (b == 0)
+    {
         triplet ans;
         ans.gcd = a;
         ans.x = 1;
@@ -30,7 +33,8 @@ triplet extendedEuclid(int a, int b) {
     return ans;
 }
 
-signed main() {
+signed main()
+{
     int a, b;
     cout << "Enter a and b: ";
     cin >> a >> b;
