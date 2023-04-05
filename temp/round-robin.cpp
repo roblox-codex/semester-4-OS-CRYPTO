@@ -1,55 +1,92 @@
-// incomplete
 #include <iostream>
+#include <queue>
 
 using namespace std;
 
-int main()
-{
-    int n, q, i, j, k, time, remain, flag = 0, time_quantum;
-    int wait_time = 0, turnaround_time = 0, at[10], bt[10], rt[10];
-    cout << "Enter Total Process: ";
+// Process structure
+struct Process {
+    int pid; // process ID
+    int bt; // burst time
+    int art; // arrival time
+    int wt; // waiting time
+    int tat; // turnaround time
+    int rt; // remaining time
+
+    // Constructor
+    Process(int pid, int bt, int art) {
+        this->pid = pid;
+        this->bt = bt;
+        this->art = art;
+        this->wt = 0;
+        this->tat = 0;
+        this->rt = bt;
+    }
+};
+
+void findWaitingTime(Process processes[], int n, int quantum) {
+    queue<Process> ready_queue;
+
+    int t = 0; // current time
+
+    // Add all processes to ready queue
+    for (int i = 0; i < n; i++) {
+        ready_queue.push(processes[i]);
+    }
+
+    // Process until ready queue is empty
+    while (!ready_queue.empty()) {
+        Process p = ready_queue.front();
+        ready_queue.pop();
+
+        // If remaining time of process is less than or equal to quantum
+        if (p.rt <= quantum) {
+            t += p.rt;
+            p.rt = 0;
+            p.wt = t - p.bt - p.art;
+            p.tat = t - p.art;
+
+            // Print process details
+            cout << "Process " << p.pid << ": ";
+            cout << "WT = " << p.wt << ", ";
+            cout << "TAT = " << p.tat << endl;
+        }
+        // If remaining time of process is greater than quantum
+        else {
+            t += quantum;
+            p.rt -= quantum;
+
+            // Add process back to ready queue
+            ready_queue.push(p);
+        }
+    }
+}
+
+int main() {
+    int n, quantum;
+
+    cout << "Enter the number of processes: ";
     cin >> n;
-    remain = n;
-    for (i = 0; i < n; i++)
-    {
-        cout << "Enter Arrival Time and Burst Time for Process Process Number " << i + 1 << " : ";
-        cin >> at[i];
-        cin >> bt[i];
-        rt[i] = bt[i];
+
+    cout << "Enter the quantum: ";
+    cin >> quantum;
+
+    Process processes[n];
+
+    // Input process details
+    for (int i = 0; i < n; i++) {
+        int pid, bt, art;
+
+        cout << "Enter process " << i+1 << " details:\n";
+        cout << "Burst Time: ";
+        cin >> bt;
+        cout << "Arrival Time: ";
+        cin >> art;
+
+        processes[i] = Process(i+1, bt, art);
     }
-    cout << "Enter Time Quantum: ";
-    cin >> time_quantum;
-    cout << "\n\nProcess\t|Turnaround Time|Waiting Time\n\n";
-    for (time = 0, i = 0; remain != 0;)
-    {
-        if (rt[i] <= time_quantum && rt[i] > 0)
-        {
-            time += rt[i];
-            rt[i] = 0;
-            flag = 1;
-        }
-        else if (rt[i] > 0)
-        {
-            rt[i] -= time_quantum;
-            time += time_quantum;
-        }
-        if (rt[i] == 0 && flag == 1)
-        {
-            remain--;
-            cout << "P[" << i + 1 << "]\t|\t" << time - at[i] << "\t|\t" << time - at[i] - bt[i] << endl;
-            wait_time += time - at[i] - bt[i];
-            turnaround_time += time - at[i];
-            flag = 0;
-        }
-        if (i == n - 1)
-            i = 0;
-        else if (at[i + 1] <= time)
-            i++;
-        else
-            i = 0;
-    }
-    cout << "\nAverage Waiting Time= " << wait_time * 1.0 / n << endl;
-    cout << "Avg Turnaround Time = " << turnaround_time * 1.0 / n << endl;
+
+    // Find waiting time of processes using Round Robin scheduling
+    findWaitingTime(processes, n, quantum);
 
     return 0;
 }
