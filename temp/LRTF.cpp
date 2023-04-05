@@ -31,14 +31,14 @@ int main ()
   cin >> n;
   for (int i = 0; i < n; i++)
   {
-      cout << "\nEnter Process " << i+1 << " Arrival Time: ";
+      cout << "\nEnter Process" << i << "Arrival Time: ";
       cin >> ps[i].at;
       ps[i].pid = i;
   }
 
   for (int i = 0; i < n; i++)
   {
-      cout << "\nEnter Process " << i+1 << " Burst Time: ";
+      cout << "\nEnter Process" << i << "Burst Time: ";
       cin >> ps[i].bt;
       bt_remaining[i] = ps[i].bt;
   }
