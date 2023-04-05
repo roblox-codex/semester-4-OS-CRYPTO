@@ -1,88 +1,132 @@
-#include <iostream>
-#include <vector>
-#include <algorithm>
-#include <iomanip>
-
+// Longest Job First
+// Criteria : Burst Time
+// Mode : Non Preemptive
+#include <bits/stdc++.h>
 using namespace std;
-
-// Struct to represent a process
-struct Process
+class Process
 {
-    int id;
-    int arrival_time;
-    int burst_time;
+public:
+    int pid; //process id
+    int at;  //arrival time
+    int bt;  //burst time
+    int wt;  //waiting time
+    int tat; //turn around time
+    int ct;  //completion time
+    Process()
+    {
+        pid = -1;
+        at = -1;
+        bt = 0;
+        wt = 0;
+        tat = 0;
+        ct = 0;
+    }
 };
 
-// Function to implement the LJF scheduling algorithm and print a Gantt chart
-void ljf(vector<Process> &processes)
+bool processCmpAT(Process p1, Process p2)
 {
-    // Sort processes by descending order of burst time
-    sort(processes.begin(), processes.end(), [](const Process &p1, const Process &p2)
-         { return p1.burst_time > p2.burst_time; });
-
-    int n = processes.size();
-    int current_time = 0;
-    int total_waiting_time = 0;
-    int total_turnaround_time = 0;
-    int total_completion_time = 0;
-
-    // Print header for process details table
-    cout << endl
-         << "Process Details" << endl;
-    cout << "+-----+--------------+------------+-----------------+-------------------+---------------------+" << endl;
-    cout << "| PID | Arrival Time | Burst Time | Waiting Time (s) | Turnaround Time (s) | Completion Time (s) |" << endl;
-    cout << "+-----+--------------+------------+-----------------+-------------------+---------------------+" << endl;
-
-    for (int i = 0; i < n; i++)
-    {
-        Process &p = processes[i];
-        int start_time = max(current_time, p.arrival_time);
-        int end_time = start_time + p.burst_time;
-        int waiting_time = max(0, start_time - p.arrival_time);
-        int turnaround_time = end_time - p.arrival_time;
-        int completion_time = end_time;
-        total_waiting_time += waiting_time;
-        total_turnaround_time += turnaround_time;
-        total_completion_time += completion_time;
-        current_time = end_time;
-
-        // Print process details row
-        cout << "| " << setw(3) << p.id << " | " << setw(12) << p.arrival_time << " | " << setw(10) << p.burst_time << " | " << setw(15) << waiting_time << " | " << setw(17) << turnaround_time << " | " << setw(19) << completion_time << " |" << endl;
-    }
-
-    // Print footer for process details table
-    cout << "+-----+--------------+------------+-----------------+-------------------+---------------------+" << endl;
-
-    double avg_waiting_time = static_cast<double>(total_waiting_time) / n;
-    double avg_turnaround_time = static_cast<double>(total_turnaround_time) / n;
-    double avg_completion_time = static_cast<double>(total_completion_time) / n;
-
-    // Print average waiting time, turnaround time, and completion time
-    cout << "Average waiting time: " << fixed << setprecision(2) << avg_waiting_time << endl;
-    cout << "Average turnaround time: " << fixed << setprecision(2) << avg_turnaround_time << endl;
-    cout << "Average completion time: " << fixed << setprecision(2) << avg_completion_time << endl;
+    // to Sort According to AT
+    if (p1.at < p2.at)
+        return true;
+    if (p1.at == p2.at)
+        return p1.pid < p2.pid; //if arrival times are equal compare pid
+    return false;
 }
-
-
+bool processCmpPid(Process p1, Process p2)
+{
+    // to Sort According to AT
+    if (p1.pid < p2.pid)
+        return true;
+    return false;
+}
+bool processCmpBT(Process p1, Process p2)
+{
+    // to Sort According to AT
+    if (p1.bt > p2.bt)
+        return true;
+    if (p1.bt == p2.bt)
+        return p1.pid < p2.pid; //if arrival times are equal compare pid
+    return false;
+}
+void display(vector<Process> &, int);
+void display(vector<Process> &v, int n)
+{
+    int i = 0;
+    cout << "Pid \t AT \t BT \t CT \t TAT \t WT" << endl;
+    for (i = 0; i < n; i++)
+    {
+        cout << v[i].pid << "\t" << v[i].at << "\t" << v[i].bt << "\t" << v[i].ct << "\t" << v[i].tat << "\t" << v[i].wt << endl;
+    }
+}
 int main()
 {
-    // Input the number of processes
-    int n;
-    cout << "Enter the number of processes: ";
+    int n, i = 0;
+    cout << "Enter no. of processes\n";
     cin >> n;
+    vector<Process> incoming(n, Process());
+    vector<Process> ready;
+    vector<Process> completed;
 
-    // Input the arrival time and burst time for each process
-    vector<Process> processes(n);
-    for (int i = 0; i < n; i++)
+    cout << "Input , enter one process on one line <Pid> <AT> <BT> \n";
+    for (i = 0; i < n; i++)
     {
-        Process &p = processes[i];
-        p.id = i + 1;
-        cout << "Enter the arrival time and burst time for process " << p.id << ": ";
-        cin >> p.arrival_time >> p.burst_time;
+        cin >> incoming[i].pid >> incoming[i].at >> incoming[i].bt;
     }
+    sort(incoming.begin(), incoming.end(), processCmpAT);
 
-    // Run the LJF scheduling algorithm and print the Gantt chart
-    ljf(processes);
+    int tc = 0; // no of tasks or process completed
+    int clock = 0;
+    double tsum = 0, wsum = 0;
+    while (completed.size() != n)
+    {
+        for (int j = 0; j < incoming.size(); j++)
+        {
+            if (incoming[j].at <= clock)
+            {
+                // erase from incoming , put it into ready for processing
+                ready.push_back(incoming[j]);
+                incoming.erase(incoming.begin() + j);
+                j--;
+            }
+        }
 
+        if (ready.empty())
+        {
+            clock++;
+        }
+        else
+        {
+            // process ready and calculate ct
+            sort(ready.begin(), ready.end(), processCmpBT);
+            clock += ready[0].bt;
+            //instead of following complicated if else I could do ct = clock ;
+            ready[0].ct = clock;
+            // if (completed.empty()) //first case
+            // {
+            //     ready[0].ct = ready[0].at + ready[0].bt;
+            // }
+            // else if (completed.back().ct >= ready[0].at)
+            // {
+            //     ready[0].ct = completed.back().ct + ready[0].bt;
+            // }
+            // else
+            // {
+            //     ready[0].ct = ready[0].at + ready[0].bt;
+            // }
+            ready[0].tat = ready[0].ct - ready[0].at;
+            ready[0].wt = ready[0].tat - ready[0].bt;
+            tsum += ready[0].tat;
+            wsum += ready[0].wt;
+
+            completed.push_back(ready[0]);
+            ready.erase(ready.begin());
+        }
+    }
+    double tavg = tsum / n;
+    double wavg = wsum / n;
+    sort(completed.begin(), completed.end(), processCmpPid);
+    display(completed, n);
+    cout << "Tsum = " << tsum << " \t WT sum =" << wsum << endl;
+    cout << "Tavg = " << tavg << " \t WT avg =" << wavg;
     return 0;
 }
