@@ -11,6 +11,7 @@ struct Process {
     int wt; // waiting time
     int tat; // turnaround time
     int rt; // remaining time
+    int ct; // completion time
 
     // Constructor
     Process(int pid, int bt, int art) {
@@ -20,6 +21,7 @@ struct Process {
         this->wt = 0;
         this->tat = 0;
         this->rt = bt;
+        this->ct = 0;
     }
 };
 
@@ -47,11 +49,13 @@ void findWaitingTime(Process processes[], int n, int quantum) {
             p.rt = 0;
             p.wt = t - p.bt - p.art;
             p.tat = t - p.art;
+            p.ct = t;
 
             // Print process details
             cout << "Process " << p.pid << ": ";
             cout << "WT = " << p.wt << ", ";
-            cout << "TAT = " << p.tat << endl;
+            cout << "TAT = " << p.tat << ", ";
+            cout << "CT = " << p.ct << endl;
         }
         // If remaining time of process is greater than quantum
         else {
