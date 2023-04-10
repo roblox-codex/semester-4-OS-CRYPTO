@@ -26,22 +26,24 @@ void sjf(vector<Process> processes) {
     // sort processes by arrival time and burst time
     sort(processes.begin(), processes.end(), compare);
     
-    // calculate waiting time and turnaround time for each process
+    // calculate waiting time, turnaround time, and completion time for each process
     for (int i = 0; i < n; i++) {
         // execute process
         cout << "Process " << processes[i].pid << " is executing.\n";
         current_time += processes[i].burst_time;
         
-        // calculate waiting time and turnaround time
+        // calculate waiting time, turnaround time, and completion time
         int waiting_time = current_time - processes[i].arrival_time - processes[i].burst_time;
         int turnaround_time = current_time - processes[i].arrival_time;
+        int completion_time = current_time;
         average_waiting_time += waiting_time;
         average_turnaround_time += turnaround_time;
         
         // print process information
         cout << "Process " << processes[i].pid << " finished execution.\n";
         cout << "Waiting time: " << waiting_time << "\n";
-        cout << "Turnaround time: " << turnaround_time << "\n\n";
+        cout << "Turnaround time: " << turnaround_time << "\n";
+        cout << "Completion time: " << completion_time << "\n\n";
     }
     
     // calculate average waiting time and average turnaround time
@@ -60,7 +62,6 @@ void sjf(vector<Process> processes) {
     cout << "Average turnaround time: " << average_turnaround_time << "\n";
     cout << "CPU utilization: " << cpu_utilization << "%\n";
 }
-
 int main() {
     // get number of processes from user
     int n;
