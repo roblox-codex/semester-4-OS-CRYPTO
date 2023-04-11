@@ -1,136 +1,210 @@
-#include<iostream>
-#include<cmath>
-#include<cstring>
-
+#include <bits/stdc++.h>
 using namespace std;
 
-// function to convert plain text to matrix
-void textToMatrix(string plaintext, int matrix[][3], int size)
+int key[3][3]; // Global
+
+int mod26(int x)
 {
-    int k = 0;
-    for(int i=0;i<size;i++)
-    {
-        for(int j=0;j<3;j++)
-        {
-            if(k<plaintext.length())
-                matrix[i][j] = (int)plaintext[k++] - 97;
-            else
-                matrix[i][j] = 23;
-        }
-    }
+    return x >= 0 ? (x % 26) : 26 - (abs(x) % 26);
 }
 
-// function to convert matrix to cipher text
-void matrixToText(int matrix[][3], int size)
+/* findDet(matrix , order_of_matrix) */
+int findDet(int m[3][3], int n)
 {
-    for(int i=0;i<size;i++)
+    int det;
+    if (n == 2)
     {
-        for(int j=0;j<3;j++)
-        {
-            cout<<(char)(matrix[i][j]+97);
-        }
+        det = m[0][0] * m[1][1] - m[0][1] * m[1][0];
     }
+    else if (n == 3)
+    {
+        det = m[0][0] * (m[1][1] * m[2][2] - m[1][2] * m[2][1]) - m[0][1] * (m[1][0] * m[2][2] - m[2][0] * m[1][2]) + m[0][2] * (m[1][0] * m[2][1] - m[1][1] * m[2][0]);
+    }
+    else
+        det = 0; // invalid input
+    return mod26(det);
 }
 
-// function to multiply two matrices
-void multiplyMatrix(int a[][3], int b[][3], int result[][3])
+int findDetInverse(int R, int D = 26) // R is the remainder or determinant
 {
-    for(int i=0;i<3;i++)
+    int i = 0;
+    int p[100] = {0, 1};
+    int q[100] = {0}; // quotient
+
+    while (R != 0)
     {
-        for(int j=0;j<3;j++)
+        q[i] = D / R;
+        int oldD = D;
+        D = R;
+        R = oldD % R;
+        if (i > 1)
         {
-            result[i][j] = 0;
-            for(int k=0;k<3;k++)
+            p[i] = mod26(p[i - 2] - p[i - 1] * q[i - 2]);
+        }
+        i++;
+    }
+    if (i == 1)
+        return 1;
+    else
+        return p[i] = mod26(p[i - 2] - p[i - 1] * q[i - 2]);
+}
+
+void multiplyMatrices(int a[1000][3], int a_rows, int a_cols, int b[1000][3], int b_rows, int b_cols, int res[1000][3])
+{
+    for (int i = 0; i < a_rows; i++)
+    {
+        for (int j = 0; j < b_cols; j++)
+        {
+            for (int k = 0; k < b_rows; k++)
             {
-                result[i][j] += a[i][k]*b[k][j];
+                res[i][j] += a[i][k] * b[k][j];
             }
-            result[i][j] %= 26;
+            res[i][j] = mod26(res[i][j]);
         }
     }
 }
 
-// function to calculate inverse of a matrix
-void inverse(int a[][3], int inverse[][3])
+/* Inverse = (matrix * detInverse) mod 26 */
+/* findInverse(matrix , order_of_matrix , result_matrix) */
+void findInverse(int m[3][3], int n, int m_inverse[3][3])
 {
-    int det = 0, adj[3][3];
-    for(int i=0;i<3;i++)
-    {
-        det += (a[0][i]*(a[1][(i+1)%3]*a[2][(i+2)%3]-a[1][(i+2)%3]*a[2][(i+1)%3]));
-    }
+    int adj[3][3] = {0};
 
-    if(det == 0)
-    {
-        cout<<"Inverse does not exist";
-        return;
-    }
+    int det = findDet(m, n); // findDet(matrix , order_of_matrix)
+    int detInverse = findDetInverse(det);
 
-    for(int i=0;i<3;i++)
+    if (n == 2)
     {
-        for(int j=0;j<3;j++)
+        adj[0][0] = m[1][1];
+        adj[1][1] = m[0][0];
+        adj[0][1] = -m[0][1];
+        adj[1][0] = -m[1][0];
+    }
+    else if (n == 3)
+    {
+        int temp[5][5] = {0};
+        // fill the 5x5 matrix
+        for (int i = 0; i < 5; i++)
         {
-            adj[i][j] = (a[(j+1)%3][(i+1)%3]*a[(j+2)%3][(i+2)%3])-(a[(j+1)%3][(i+2)%3]*a[(j+2)%3][(i+1)%3]);
-            if((i+j)%2 == 1)
+            for (int j = 0; j < 5; j++)
             {
-                adj[i][j] = -adj[i][j];
+                temp[i][j] = m[i % 3][j % 3];
             }
         }
-    }
-
-    for(int i=0;i<3;i++)
-    {
-        for(int j=0;j<3;j++)
+        /* except first row and first column, multiply elements along rows and place them along columns */
+        for (int i = 1; i <= 3; i++)
         {
-            inverse[i][j] = adj[i][j]/det;
-            if(inverse[i][j]<0)
+            for (int j = 1; j <= 3; j++)
             {
-                inverse[i][j] += 26;
+                adj[j - 1][i - 1] = temp[i][j] * temp[i + 1][j + 1] - temp[i][j + 1] * temp[i + 1][j];
             }
         }
     }
+
+    for (int i = 0; i < n; i++)
+    {
+        for (int j = 0; j < n; j++)
+        {
+            m_inverse[i][j] = mod26(adj[i][j] * detInverse);
+        }
+    }
 }
 
-int main()
+// C = PK
+string encrypt(string pt, int n)
 {
-    int key[3][3], inverse_key[3][3], plaintext_matrix[3][3], cipher_matrix[3][3];
-    string plaintext;
-    cout<<"Enter plaintext (in lowercase): ";
-    getline(cin, plaintext);
-    cout<<"Enter key matrix: "<<endl;
-    for(int i=0;i<3;i++)
+    int P[1000][3] = {0}; // plaintext
+    int C[1000][3] = {0}; // cipher text
+    int ptIter = 0;
+
+    while (pt.length() % n != 0)
     {
-        for(int j=0;j<3;j++)
+        pt += "x"; // pad extra x
+    }
+    int row = (pt.length()) / n; // number of rows in P
+
+    for (int i = 0; i < row; i++)
+    {
+        for (int j = 0; j < n; j++)
         {
-            cin>>key[i][j];
+            P[i][j] = pt[ptIter++] - 'a';
         }
     }
 
-    // check if determinant is zero
-   if(det == 0)
-{
-    cout<<"Determinant is zero. Key is not valid.";
-    return 0;
+    // multiplyMatrices(mat_a , row_a , col_a , mat_b, row_b, col_b , mat_result)
+    multiplyMatrices(P, row, n, key, n, n, C);
+
+    string ct = "";
+    for (int i = 0; i < row; i++)
+    {
+        for (int j = 0; j < n; j++)
+        {
+            ct += (C[i][j] + 'a');
+        }
+    }
+    return ct;
 }
 
-// calculate inverse key
-inverse(key, inverse_key);
+// P = C*(k_inverse)
+string decrypt(string ct, int n)
+{
+    int P[1000][3] = {0}; // plaintext
+    int C[1000][3] = {0}; // cipher text
+    int ctIter = 0;
 
-// pad plaintext if necessary
-int size = ceil((float)plaintext.length()/3);
-textToMatrix(plaintext, plaintext_matrix, size);
+    int row = ct.length() / n; // number of rows in C
 
-// multiply key with plaintext matrix
-multiplyMatrix(key, plaintext_matrix, cipher_matrix);
+    for (int i = 0; i < row; i++)
+    {
+        for (int j = 0; j < n; j++)
+        {
+            C[i][j] = ct[ctIter++] - 'a';
+        }
+    }
 
-// convert cipher matrix to ciphertext
-cout<<"Cipher Text: ";
-matrixToText(cipher_matrix, size);
+    int k_inverse[3][3] = {0};
+    /* findInverse(matrix , order_of_matrix , result_matrix) */
+    findInverse(key, n, k_inverse);
 
-// multiply inverse key with cipher matrix to get plaintext matrix
-multiplyMatrix(inverse_key, cipher_matrix, plaintext_matrix);
+    /* multiplyMatrices(mat_a , row_a , col_a , mat_b, row_b, col_b , mat_result) */
+    multiplyMatrices(C, row, n, k_inverse, n, n, P);
 
-// convert plaintext matrix to plaintext
-cout<<"\nDecrypted Text: ";
-matrixToText(plaintext_matrix, size);
+    string pt = "";
+    for (int i = 0; i < row; i++)
+    {
+        for (int j = 0; j < n; j++)
+        {
+            pt += (P[i][j] + 'a');
+        }
+    }
+    return pt;
+}
 
-return 0;
+int main(void)
+{
+    string pt;
+    int n;
+
+    cout << "Enter the text to be encrypted    : ";
+    cin >> pt;
+
+    cout << "Enter order of key matrix : ";
+    cin >> n;
+
+    cout << "Enter key matrix: " << endl;
+    for (int i = 0; i < n; i++)
+    {
+        for (int j = 0; j < n; j++)
+        {
+            cin >> key[i][j];
+        }
+    }
+
+    cout << "\nOriginal text  : " << pt << endl;
+
+    string ct = encrypt(pt, n);
+    cout << "Encrypted text : " << ct << endl;
+
+    string dt = decrypt(ct, n);
+    cout << "Decrypted text : " << dt << endl;
 }
